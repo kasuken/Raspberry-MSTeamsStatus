@@ -5,6 +5,8 @@ import unicornhathd
 from PIL import Image, ImageDraw, ImageFont
 from enum import Enum
 import time
+from dotenv import load_dotenv
+import os
 
 class Status(Enum):
     AVAILABLE = 0
@@ -143,7 +145,6 @@ def run(access_token, user_id):
             user_calendar = get_user_calendar(access_token, user_id)
             if user_calendar['value']:
                 current_event = user_calendar['value'][0]
-                print(f"Current event: {current_event['subject']}")
                 event_start = datetime.fromisoformat(current_event['start']['dateTime']).replace(tzinfo=timezone.utc)
                 if event_start <= datetime.now(timezone.utc):
                     remaining_minutes = get_remaining_minutes(current_event)
@@ -154,15 +155,17 @@ def run(access_token, user_id):
             currnet_remaining_minutes = remaining_minutes
 
         display_status_on_unicornhat(status, remaining_minutes)
-        time.sleep(1)
+        time.sleep(60)
 
 
 
 if __name__ == "__main__":
-    client_id = "7cbe29c8-49a1-465d-b413-63fcbbeae87d"
-    client_secret = "zBA8Q~KULzZTHiz-YfEzGtBlysJDhwkJzR_Src-o"
-    tenant_id = "18f4337b-4972-4d84-b72d-f60498e338f7"
-    user_id = "30ada592-0c39-4303-9875-abd138b29bbd"
+    load_dotenv()
+
+    client_id = os.getenv("client_id")
+    client_secret = os.getenv("client_secret")
+    tenant_id = os.getenv("tenant_id")
+    user_id = os.getenv("user_id")
 
     access_token = get_access_token(client_id, client_secret, tenant_id)
     
